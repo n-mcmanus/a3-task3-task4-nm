@@ -1,0 +1,49 @@
+---
+title: "Task 3 - Santa Barbara urchins (McManus)"
+author: "Nick McManus"
+date: "10/22/2021"
+output: html_document
+---
+## Overview
+
+INFO HERE
+
+**Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+
+## Setup
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
+# attach packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+```
+
+First I will read in the data from `urchins.csv`
+```{r}
+#read in data
+urchins <- read_csv(here("data","urchins.csv"))
+```
+
+Next I will clean up the column headings to make the data easier to work with.
+
+```{r}
+#convert column names to lowersnake case
+urchins_clean <- clean_names(urchins) %>% 
+  #add units to size column for clarity
+  rename(size_cm = size) 
+  
+```
+
+## Section 1 - Size Comparison
+
+In this section I will compare the distribution of sizes between purple and red urchins.
+
+```{r}
+
+
+```
+
