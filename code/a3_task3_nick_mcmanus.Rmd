@@ -4,12 +4,12 @@ author: "Nick McManus"
 date: "10/22/2021"
 output: html_document
 ---
+
 ## Overview
 
 INFO HERE
 
-**Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
-
+**Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. <https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b>.
 
 ## Setup
 
@@ -24,6 +24,7 @@ library(kableExtra)
 ```
 
 First I will read in the data from `urchins.csv`
+
 ```{r}
 #read in data
 urchins <- read_csv(here("data","urchins.csv"))
@@ -35,34 +36,42 @@ Next I will clean up the column headings to make the data easier to work with.
 #convert column names to lowersnake case
 urchins_clean <- clean_names(urchins) %>% 
   #add units to size column for clarity
-  rename(size_cm = size) 
+  rename(size_cm = size) %>% 
+  #change date to standardized format
+  mutate(date = mdy(date))
   
 ```
 
-## Section 1 - Size Comparison 
- 
+## Section 1 - Size Comparison
+
 In this section I will compare the distribution of sizes between purple and red urchins.
 
-```{r}
+```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchin (*Strongylocentrotus purpuratus*) and red urchin (*Mesocentrotus franciscanus*) More descriptive info about caption here"}
+
 # assign data to the plot
 ggplot(data = urchins_clean) +
   # create histogram and set aesthetics
   geom_histogram(
     aes(x = size_cm, fill = common_name),
+    color = "black",
     bins = 12) +
   
   #change labels
-  labs(x = "size (cm)",
-       y = "count") +
+  labs(x = "Urchin size (cm)",
+       y = "Frequency",
+       fill = "Urchin species") +
   
+  scale_fill_manual(values = c("purple", "red")) +
+  
+    #make histogram faceted to urchin type 
   facet_wrap(~ common_name) +
   
   #set theme
   theme(
-    axis.title.x = element_text(size = 13)
-  ) +
+    axis.title.x = element_text(size = 13),
+    axis.title.y = element_text(size = 13)) +
   
-  theme_minimal()
+  theme_bw()
 
 ```
 
@@ -70,19 +79,24 @@ ggplot(data = urchins_clean) +
 # calculate summary table with stats of interest
 stats_urchins <- urchins_clean %>% 
   group_by(common_name) %>% 
-  summarize(mean_size_cm = mean(size_cm),
-            median_size_cm = median(size_cm),
-            sd_size = sd(size_cm),
-            sample_size = n()) 
+  summarize(mean_size_cm = round(mean(size_cm), digits = 1),  #use round() to change the number of decimals
+            median_size_cm = round(median(size_cm), digits = 1),
+            sd_size = round(sd(size_cm), digits = 1),
+            sample_size = n())
 
+# create table to display stats
 stats_urchins %>% 
   kable(col.names = c("Species",
-                      "Mean size (cm)",
-                      "Median size (cm)",
+                      "Mean (cm)",
+                      "Median (cm)",
                       "Standard deviation (cm)",
-                      "Sample size")) %>% 
+                      "Sample size (n)"),
+        caption = "**Table 1.** Sample statistics of purple and red urchin sizes.") %>% 
+  
   kable_styling(full_width = FALSE,
                 bootstrap_options = "hover",
                 position = "left")
 ```
 
+
+The central tendency(metrics)(mean and median) for both the red and purple urchins are consistent. The distribution for purple urchin sizes skews positively and has a smaller spread (std dev). Red urchin sizes are spread more and slightly more normally distributed
