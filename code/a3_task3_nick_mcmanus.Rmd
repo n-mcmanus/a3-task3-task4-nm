@@ -14,7 +14,7 @@ INFO HERE
 ## Setup
 
 ```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
+knitr::opts_chunk$set(echo = TRUE, messages = FALSE, warning = FALSE)
 # attach packages
 library(tidyverse)
 library(here)
@@ -73,15 +73,16 @@ stats_urchins <- urchins_clean %>%
   summarize(mean_size_cm = mean(size_cm),
             median_size_cm = median(size_cm),
             sd_size = sd(size_cm),
-            sample_size = n())
-
+            sample_size = n()) 
 
 stats_urchins %>% 
   kable(col.names = c("Species",
                       "Mean size (cm)",
                       "Median size (cm)",
-                      "Standard Deviation (cm)",
+                      "Standard deviation (cm)",
                       "Sample size")) %>% 
-  kable_styling()
+  kable_styling(full_width = FALSE,
+                bootstrap_options = "hover",
+                position = "left")
 ```
 
