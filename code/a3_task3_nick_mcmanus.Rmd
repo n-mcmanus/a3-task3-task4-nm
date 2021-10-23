@@ -65,3 +65,12 @@ ggplot(data = urchins_clean) +
 
 ```
 
+```{r}
+stats_urchins <- urchins_clean %>% 
+  group_by(common_name) %>% 
+  summarize(mean_size_cm = mean(size_cm),
+            median_size_cm = median(size_cm),
+            sd_size_cm = sd(size_cm),
+            sample_size = n())
+```
+
