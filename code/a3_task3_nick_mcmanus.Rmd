@@ -20,6 +20,7 @@ library(tidyverse)
 library(here)
 library(janitor)
 library(lubridate)
+library(kableExtra)
 ```
 
 First I will read in the data from `urchins.csv`
@@ -66,11 +67,21 @@ ggplot(data = urchins_clean) +
 ```
 
 ```{r}
+# calculate summary table with stats of interest
 stats_urchins <- urchins_clean %>% 
   group_by(common_name) %>% 
   summarize(mean_size_cm = mean(size_cm),
             median_size_cm = median(size_cm),
-            sd_size_cm = sd(size_cm),
+            sd_size = sd(size_cm),
             sample_size = n())
+
+
+stats_urchins %>% 
+  kable(col.names = c("Species",
+                      "Mean size (cm)",
+                      "Median size (cm)",
+                      "Standard Deviation (cm)",
+                      "Sample size")) %>% 
+  kable_styling()
 ```
 
