@@ -21,6 +21,7 @@ library(here)
 library(janitor)
 library(lubridate)
 library(kableExtra)
+library(viridis)
 ```
 
 First I will read in the data from `urchins.csv`
@@ -42,7 +43,7 @@ urchins_clean <- clean_names(urchins) %>%
   
 ```
 
-## Section 1 - Size Comparison
+## Section 1 - Urchin Size Distribution by Species
 
 In this section I will compare the distribution of sizes between purple and red urchins.
 
@@ -54,12 +55,12 @@ ggplot(data = urchins_clean) +
   geom_histogram(
     aes(x = size_cm, fill = common_name),
     color = "black",
-    bins = 12) +
+    bins = 12,
+    show.legend = FALSE) +  #remove redundant legend
   
   #change labels
   labs(x = "Urchin size (cm)",
-       y = "Frequency",
-       fill = "Urchin species") +
+       y = "Frequency") +
   
   scale_fill_manual(values = c("purple", "red")) +
   
@@ -99,4 +100,50 @@ stats_urchins %>%
 ```
 
 
-The central tendency(metrics)(mean and median) for both the red and purple urchins are consistent. The distribution for purple urchin sizes skews positively and has a smaller spread (std dev). Red urchin sizes are spread more and slightly more normally distributed
+The central tendency(metrics)(mean and median) for both the red and purple urchins are consistent. The distribution for purple urchin sizes skews positively and has a smaller spread (std dev). Red urchin sizes are spread more and slightly more normally distributed.
+
+
+
+## Section 2 - Purple urchin counts by location and year.
+
+```{r}
+#create subset of data for purple urchins
+purple_urchins <- urchins_clean %>% 
+  filter(common_name == "Purple Urchin") %>% 
+  mutate(date = ymd(date),
+         year = year(date),        #new column with year
+         site_full = case_when(    #change site abbreviations to full names
+           site == "NAPL" ~ "Naples Reef",
+           site == "AQUE" ~ "Arroyo Quemado Reef",
+           site == "CARP" ~ "Carpinteria Reef",
+           site == "MOHK" ~ "Mohawk Reef",
+           site == "IVEE" ~ "Isla Vista Reef"))
+```
+
+
+```{r}
+# find total number of purple urchins observed by site and year
+purple_urchins_site_year <- purple_urchins %>% 
+  group_by(site, year) %>% 
+  summarize(sample_size = n())
+
+head(purple_urchins_site_year)
+```
+
+
+
+```{r, fig.cap = **Figure 2. Change in Purple Urchin count over time**. More specific captions stuff here.}
+ggplot(data = purple_urchins_site_year, aes(x = year, y = sample_size)) +
+  
+  geom_line(aes(color = site),
+            size = 1.5,      #change line width
+            alpha = 0.6) +   #change line transparency
+  
+  #change line colors
+  scale_color_manual(values = c("red", "blue", "green", "olivedrab", "navy")) +
+  
+  scale_x_continuous(breaks = 2008:2020) +
+  
+  theme_minimal()    #how to change the grid lines?
+```
+Assume that the methodology (surveyed area size) remains constant every where. 
