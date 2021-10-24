@@ -1,0 +1,43 @@
+---
+title: "Task 4 - Naples Reef purple urchins (McManus)"
+author: "Nick McManus"
+date: "10/23/2021"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+# attach packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+```
+
+```{r}
+# read in data
+urchins <- read_csv(here("data", "urchins.csv"))
+
+# clean data and make columns easier to work with in next step
+urchins_clean <- clean_names(urchins) %>% 
+  rename(size_cm = size) %>% 
+  mutate(date = mdy(date),
+         year = year(date))
+```
+
+
+Wrangling!!
+```{r}
+purple_urchins_napl_2010 <- urchins_clean %>% 
+  # filter for only only Naples Reef, purple urchins, and the year 2010
+  filter(site == "NAPL",
+         year == "2010",
+         common_name == "Purple Urchin") %>% 
+  
+  # compare the mean size between different treatment types
+  group_by(treatment) %>% 
+  summarize(mean_size_cm = round(mean(size_cm), digits = 1))
+  
+
+```
+
