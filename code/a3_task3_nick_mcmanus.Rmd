@@ -92,9 +92,9 @@ stats_urchins %>%
                       "Median (cm)",
                       "Standard deviation (cm)",
                       "Sample size (n)"),
-        caption = "**Table 1.** Sample statistics of purple and red urchin sizes.") %>% 
+        caption = "**Table 1.** Descriptive statistics of purple and red urchin sizes.") %>% 
   
-  kable_styling(full_width = FALSE,
+  kable_classic(full_width = TRUE,
                 bootstrap_options = "hover",
                 position = "left")
 ```
@@ -136,14 +136,23 @@ head(purple_urchins_site_year)
 ggplot(data = purple_urchins_site_year, aes(x = year, y = sample_size)) +
   
   geom_line(aes(color = site),
-            size = 1.5,      #change line width
-            alpha = 0.6) +   #change line transparency
+            size = 1.3,      #change line width
+            alpha = 0.9) +   #change line transparency
   
   #change line colors
-  scale_color_manual(values = c("red", "blue", "green", "olivedrab", "navy")) +
+  scale_color_manual(values = c("magenta", "darkblue", "aquamarine4", "firebrick3", "goldenrod")) +
   
   scale_x_continuous(breaks = 2008:2020) +
   
-  theme_minimal()    #how to change the grid lines?
+  #change labels
+  labs(y = "Sample size (n)",
+       x = "Year")+
+  
+  theme_minimal() +   #how to change the grid lines?
+  
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
 ```
 Assume that the methodology (surveyed area size) remains constant every where. 

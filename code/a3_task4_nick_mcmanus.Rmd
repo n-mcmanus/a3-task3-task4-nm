@@ -12,6 +12,7 @@ library(tidyverse)
 library(here)
 library(janitor)
 library(lubridate)
+library(kableExtra)
 ```
 
 ```{r}
@@ -36,8 +37,25 @@ purple_urchins_napl_2010 <- urchins_clean %>%
   
   # compare the mean size between different treatment types
   group_by(treatment) %>% 
-  summarize(mean_size_cm = round(mean(size_cm), digits = 1))
-  
+  summarize(mean_size_cm = round(mean(size_cm), digits = 1),
+            median_size_cm = round(median(size_cm), digits = 1),
+            sd_size_cm = round(sd(size_cm), digits = 1),
+            sample_size = n())
+```
 
+
+```{r}
+purple_urchins_napl_2010 %>% 
+  kable(col.names = c("Treatment type",
+                      "Mean (cm)",
+                      "Median (cm)",
+                      "Standard deviation (cm)",
+                      "Sample size (n)"),
+        caption = "**Table 1.** Comparison of purple urchin sizes between treatment types at Naples Reef in 2010")  %>% 
+  
+  kable_styling(full_width = FALSE,
+                bootstrap_options = "hover",
+                position = "left")
+  
 ```
 
