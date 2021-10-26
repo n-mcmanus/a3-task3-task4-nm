@@ -13,8 +13,8 @@ INFO HERE
 
 ## Setup
 
-```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE, messages = FALSE, warning = FALSE)
+```{r setup, include=TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # attach packages
 library(tidyverse)
 library(here)
@@ -24,14 +24,17 @@ library(kableExtra)
 library(viridis)
 ```
 
-First I will read in the data from `urchins.csv`
+First I will read in the data from `urchins.csv` and return the first 6 lines for reference.
 
 ```{r}
 #read in data
 urchins <- read_csv(here("data","urchins.csv"))
+
+#return first 6 lines
+head(urchins)
 ```
 
-Next I will clean up the column headings to make the data easier to work with.
+Next I will clean up the column headings to make the data easier to wrangle.
 
 ```{r}
 #convert column names to lowersnake case
@@ -45,9 +48,9 @@ urchins_clean <- clean_names(urchins) %>%
 
 ## Section 1 - Urchin Size Distribution by Species
 
-In this section I will compare the distribution of sizes between purple and red urchins.
+In this section I will compare the distribution of sizes between purple and red urchins. 
 
-```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchin (*Strongylocentrotus purpuratus*) and red urchin (*Mesocentrotus franciscanus*) More descriptive info about caption here"}
+```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*Strongylocentrotus purpuratus*, left) and red urchin (*Mesocentrotus franciscanus*, right) were measured to the 0.5 cm at four sites within the SBC LTER. Purple urchins has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
 
 # assign data to the plot
 ggplot(data = urchins_clean) +
@@ -58,13 +61,14 @@ ggplot(data = urchins_clean) +
     bins = 12,
     show.legend = FALSE) +  #remove redundant legend
   
-  #change labels
+  #change axis labels
   labs(x = "Urchin size (cm)",
        y = "Frequency") +
   
-  scale_fill_manual(values = c("purple", "red")) +
+  #set fill colors
+  scale_fill_manual(values = c("darkorchid", "firebrick2")) +
   
-    #make histogram faceted to urchin type 
+  #make histogram faceted to urchin type 
   facet_wrap(~ common_name) +
   
   #set theme
@@ -94,7 +98,7 @@ stats_urchins %>%
                       "Sample size (n)"),
         caption = "**Table 1.** Descriptive statistics of purple and red urchin sizes.") %>% 
   
-  kable_classic(full_width = TRUE,
+  kable_classic(full_width = FALSE,
                 bootstrap_options = "hover",
                 position = "left")
 ```
@@ -132,7 +136,7 @@ head(purple_urchins_site_year)
 
 
 
-```{r, fig.cap = **Figure 2. Change in Purple Urchin count over time**. More specific captions stuff here.}
+```{r, fig.cap = "**Figure 2. Change in Purple Urchin count over time**. More specific captions stuff here."}
 ggplot(data = purple_urchins_site_year, aes(x = year, y = sample_size)) +
   
   geom_line(aes(color = site),
