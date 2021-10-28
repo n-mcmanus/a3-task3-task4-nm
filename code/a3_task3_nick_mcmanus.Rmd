@@ -2,7 +2,10 @@
 title: "Task 3 - Santa Barbara urchins (McManus)"
 author: "Nick McManus"
 date: "10/22/2021"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
+    theme: spacelab
 ---
 
 ## Overview
@@ -12,6 +15,10 @@ INFO HERE
 **Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. <https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b>.
 
 ## Setup
+
+### Attach Packages
+
+First I need to attach all packages used for this analysis.
 
 ```{r setup, include=TRUE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
@@ -24,7 +31,9 @@ library(kableExtra)
 library(viridis)
 ```
 
-First I will read in the data from `urchins.csv` and return the first 6 lines for reference.
+### Data Prep
+
+Here I read in the raw data from `urchins.csv` and return the first 6 lines for reference.
 
 ```{r}
 #read in data
@@ -34,7 +43,7 @@ urchins <- read_csv(here("data","urchins.csv"))
 head(urchins)
 ```
 
-Next I will clean up the column headings to make the data easier to wrangle.
+Next, I will clean up the column headings to make the data easier to work with.
 
 ```{r}
 #convert column names to lowersnake case
@@ -46,13 +55,13 @@ urchins_clean <- clean_names(urchins) %>%
   
 ```
 
+
 ## Section 1 - Urchin Size Distribution by Species
 
-In this section I will compare the distribution of sizes between purple and red urchins. 
+In this section I compare the distribution of sizes (in cm) between purple and red urchins. Using the cleaned data, I visually present the differences in distribution with a histogram (Fig. 1) and summary statistics table (Table 1).
 
-```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*Strongylocentrotus purpuratus*, left) and red urchin (*Mesocentrotus franciscanus*, right) were measured to the 0.5 cm at four sites within the SBC LTER. Purple urchins has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
+```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*Strongylocentrotus purpuratus*, left) and red urchin (*Mesocentrotus franciscanus*, right) were measured to the 0.5 cm at four sites within the SBC LTER. The purple urchins sample has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
 
-# assign data to the plot
 ggplot(data = urchins_clean) +
   # create histogram and set aesthetics
   geom_histogram(
@@ -62,7 +71,7 @@ ggplot(data = urchins_clean) +
     show.legend = FALSE) +  #remove redundant legend
   
   #change axis labels
-  labs(x = "Urchin size (cm)",
+  labs(x = "Urchin diameter (cm)",
        y = "Frequency") +
   
   #set fill colors
@@ -71,22 +80,22 @@ ggplot(data = urchins_clean) +
   #make histogram faceted to urchin type 
   facet_wrap(~ common_name) +
   
-  #set theme
+  #change text elements and set theme
   theme(
-    axis.title.x = element_text(size = 13),
-    axis.title.y = element_text(size = 13)) +
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)) +
   
   theme_bw()
 
 ```
 
 ```{r}
-# calculate summary table with stats of interest
+# created df containing urchin stats of interest
 stats_urchins <- urchins_clean %>% 
   group_by(common_name) %>% 
-  summarize(mean_size_cm = round(mean(size_cm), digits = 1),  #use round() to change the number of decimals
+  summarize(mean_size_cm = round(mean(size_cm), digits = 1),  #round() changes sigfigs
             median_size_cm = round(median(size_cm), digits = 1),
-            sd_size = round(sd(size_cm), digits = 1),
+            sd_size_cm = round(sd(size_cm), digits = 1),
             sample_size = n())
 
 # create table to display stats
@@ -99,16 +108,17 @@ stats_urchins %>%
         caption = "**Table 1.** Descriptive statistics of purple and red urchin sizes.") %>% 
   
   kable_classic(full_width = FALSE,
-                bootstrap_options = "hover",
+                html_font = "Cambria",
                 position = "left")
 ```
 
-
-The central tendency(metrics)(mean and median) for both the red and purple urchins are consistent. The distribution for purple urchin sizes skews positively and has a smaller spread (std dev). Red urchin sizes are spread more and slightly more normally distributed.
+The sample of purple urchins have a mean and median of 4.5cm, while red urchins have a mean of 6.8cm and median of 7.0cm (Table 1). Both the mean and median appear to accurately represent the central tendency of urchin sizes. The distribution for purple urchin sizes is fairly normal, with a slight positive skew (Figure 1), and a skews positively and has a smaller spread (std dev). Red urchin sizes are spread more and normally distributed.
 
 
 
 ## Section 2 - Purple urchin counts by location and year.
+
+In this section I focus on purple urchins and explore the changes in count by research site over time. To do this, I first create a dataframe containing only observations for purple urchins. A column with full research site names is added for clarification.
 
 ```{r}
 #create subset of data for purple urchins
@@ -124,39 +134,48 @@ purple_urchins <- urchins_clean %>%
            site == "IVEE" ~ "Isla Vista Reef"))
 ```
 
+Next, I create a subset grouping site and year and returning the sample size.
 
 ```{r}
 # find total number of purple urchins observed by site and year
 purple_urchins_site_year <- purple_urchins %>% 
-  group_by(site, year) %>% 
+  group_by(site_full, year) %>% 
   summarize(sample_size = n())
 
 head(purple_urchins_site_year)
 ```
 
+Finally, I visually present the changes of purple urchin count over time utilizing a line graph.
 
-
-```{r, fig.cap = "**Figure 2. Change in Purple Urchin count over time**. More specific captions stuff here."}
+```{r, fig.cap = "**Figure 2. Change in Purple Urchin counts between research locations from 2008 to 2020.** Different research sites are represented by different colored lines in the graph. From to 2008 and 2011, Purple urchins were counted at four different research sites. Isla Vista Reef began in 2012."}
 ggplot(data = purple_urchins_site_year, aes(x = year, y = sample_size)) +
   
-  geom_line(aes(color = site),
+  geom_line(aes(color = site_full),
             size = 1.3,      #change line width
             alpha = 0.9) +   #change line transparency
   
   #change line colors
   scale_color_manual(values = c("magenta", "darkblue", "aquamarine4", "firebrick3", "goldenrod")) +
   
+  #customize axis tick marks
   scale_x_continuous(breaks = 2008:2020) +
+  scale_y_continuous(breaks = seq(min(0), max(1500), by = 250)) +
   
   #change labels
-  labs(y = "Sample size (n)",
-       x = "Year")+
+  labs(y = "Urchin count",
+       x = "Year",
+       color = "Research Site") +
   
-  theme_minimal() +   #how to change the grid lines?
+  #set theme
+  theme_classic() + 
   
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
+  #customize legend position
+  theme(legend.position = c(0.85, 0.8),
+        legend.title = element_text(face = "bold"),
+        axis.title.x = element_text(face = "bold"), 
+        axis.title.y = element_text(face = "bold")) +
+  
+  #customize legend title position. Unnecessary here, but included for future reference!
+  guides(color = guide_legend(title.position = "top"))
 ```
 Assume that the methodology (surveyed area size) remains constant every where. 
