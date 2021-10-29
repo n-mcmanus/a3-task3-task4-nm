@@ -58,11 +58,12 @@ urchins_clean <- clean_names(urchins) %>%
 ```
 
 
+
 # [Urchin Size Distribution by Species]{.ul}
 
 In this section I compare the distribution of sizes (in cm) between purple and red urchins. Using the cleaned data, I visually present the differences in distribution with a histogram (Fig. 1) and summary statistics table (Table 1).
 
-```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*S. purpuratus*, left) and red urchins (*M. franciscanus*, right) were measured to the 0.5cm at five sites within the SBC LTER. The purple urchins sample has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
+```{r, fig.cap = "**Figure 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*S. purpuratus*, left) and red urchins (*M. franciscanus*, right) were measured to the 0.5cm at five sites within the SBC LTER. The purple urchins sample has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
 
 ggplot(data = urchins_clean) +
   # create histogram and set aesthetics
@@ -153,7 +154,7 @@ head(purple_urchins_site_year)
 
 Finally, I visually present the changes of purple urchin count over time utilizing a line graph.
 
-```{r, fig.cap = "**Figure 2. Change in purple urchin counts between research locations from 2008 to 2020.** The different colored lines represent the five different research sites that purple urchins were observed. From to 2008 and 2011, purple urchins were sampled at four different research sites. Isla Vista Reef samples began in 2012."}
+```{r, fig.cap = "**Figure 2: Change in purple urchin counts between research locations from 2008 to 2020.** The different colored lines represent the five different research sites that purple urchins were observed. From to 2008 and 2011, purple urchins were sampled at four different research sites. Isla Vista Reef samples began in 2012."}
 
 ggplot(data = purple_urchins_site_year, aes(x = year, y = sample_size)) +
   
@@ -184,5 +185,6 @@ ggplot(data = purple_urchins_site_year, aes(x = year, y = sample_size)) +
   
   #customize legend title position. Unnecessary here, but included for future reference!
   guides(color = guide_legend(title.position = "top"))
+
 ```
 Figure 2 shows the overall trends in purple urchin counts over time. There was a spike in purple urchins from 2009-2011, which then dropped back down and remained fairly constant between 2013-2018. However, I do not believe this graph accurately represents the change in purple urchin population. Site treatments were not taken into consideration. Additionally, the abstract for this paper mentions that only 50 purple urchins were sampled for each transect within a sampling plot. Due to this sampling limit, we cannot infer that changes in counts per year represent actual changes in the overall population size. 
