@@ -27,25 +27,29 @@ urchins_clean <- clean_names(urchins) %>%
 ```
 
 
-Wrangling!!
+Filter the cleaned data to keep only observations for purple sea urchins at NAPL in 2010.
 ```{r}
 purple_urchins_napl_2010 <- urchins_clean %>% 
   # filter for only only Naples Reef, purple urchins, and the year 2010
   filter(site == "NAPL",
          year == "2010",
-         common_name == "Purple Urchin") %>% 
-  
-  # compare the mean size between different treatment types
-  group_by(treatment) %>% 
-  summarize(mean_size_cm = round(mean(size_cm), digits = 1),
-            median_size_cm = round(median(size_cm), digits = 1),
-            sd_size_cm = round(sd(size_cm), digits = 1),
-            sample_size = n())
+         common_name == "Purple Urchin")
 ```
 
-
+Create a subset containing helpful statics, then display in a summary table. 
 ```{r}
-purple_urchins_napl_2010 %>% 
+ # compare the mean size between different treatment types
+  purple_urchins_stats <- purple_urchins_napl_2010 %>% 
+    group_by(treatment) %>% 
+    summarize(
+          mean_size_cm = round(mean(size_cm), digits = 1),
+          median_size_cm = round(median(size_cm), digits = 1),
+          sd_size_cm = round(sd(size_cm), digits = 1),
+          sample_size = n())
+
+
+# return sample statistic values in table format
+purple_urchins_stats %>% 
   kable(col.names = c("Treatment type",
                       "Mean (cm)",
                       "Median (cm)",
@@ -57,5 +61,19 @@ purple_urchins_napl_2010 %>%
                 bootstrap_options = "hover",
                 position = "left")
   
+```
+
+
+```{r}
+ggplot(data = purple_urchins_napl_2010, aes(x = size_cm)) +
+  geom_histogram() +
+  facet_wrap(~ treatment)
+```
+
+
+```{r}
+ggplot(data = purple_urchins_napl_2010, aes(sample = size_cm)) +
+  geom_qq() +
+  facet_wrap(~ treatment)
 ```
 
