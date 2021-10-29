@@ -8,13 +8,14 @@ output:
     theme: spacelab
 ---
 
-## Overview
+# [Overview]{.ul}
 
-INFO HERE
+In this task, I work with a dataset for purple (*Strongylocentrotus purpuratus*) and red (*Mesocentrotus franciscanus*) sea urchins observed at five locations within the Santa Barbara Channel Long Term Ecological Research (SBC LTER) site. Specifically, this study focused on the effect of kelp removal on size frequency distribution of urchins. The diameter of urchins was measured to the nearest 0.5cm within 40m x 2m sampling plots. For this task, I first explore the difference in size distribution between urchin species, then examine how purple urchin counts between sites have changed over time. 
 
 **Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. <https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b>.
 
-## Setup
+
+# [Setup]{.ul}
 
 ### Attach Packages
 
@@ -28,7 +29,6 @@ library(here)
 library(janitor)
 library(lubridate)
 library(kableExtra)
-library(viridis)
 ```
 
 ### Data Prep
@@ -43,24 +43,26 @@ urchins <- read_csv(here("data","urchins.csv"))
 head(urchins)
 ```
 
-Next, I will clean up the column headings to make the data easier to work with.
+Next, I will clean the data to make the data easier to work with.
 
 ```{r}
 #convert column names to lowersnake case
 urchins_clean <- clean_names(urchins) %>% 
+  
   #add units to size column for clarity
   rename(size_cm = size) %>% 
+  
   #change date to standardized format
   mutate(date = mdy(date))
   
 ```
 
 
-## Section 1 - Urchin Size Distribution by Species
+# [Urchin Size Distribution by Species]{.ul}
 
 In this section I compare the distribution of sizes (in cm) between purple and red urchins. Using the cleaned data, I visually present the differences in distribution with a histogram (Fig. 1) and summary statistics table (Table 1).
 
-```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*Strongylocentrotus purpuratus*, left) and red urchin (*Mesocentrotus franciscanus*, right) were measured to the 0.5 cm at four sites within the SBC LTER. The purple urchins sample has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
+```{r, fig.cap = "**Fig. 1: Distribution of purple and red sea urchin sizes found at SBC LTER research sites.** Purple urchins (*S. purpuratus*, left) and red urchins (*M. franciscanus*, right) were measured to the 0.5cm at five sites within the SBC LTER. The purple urchins sample has a mean of 4.5cm and std dev of 1.2cm, while the red urchin sample has a mean of 6.8cm and std dev of 1.9cm."}
 
 ggplot(data = urchins_clean) +
   # create histogram and set aesthetics
@@ -89,17 +91,19 @@ ggplot(data = urchins_clean) +
 
 ```
 
+
 ```{r}
-# created df containing urchin stats of interest
-stats_urchins <- urchins_clean %>% 
+# create data subset containing urchin stats of interest
+urchins_clean_stats <- urchins_clean %>% 
   group_by(common_name) %>% 
-  summarize(mean_size_cm = round(mean(size_cm), digits = 1),  #round() changes sigfigs
+  summarize(mean_size_cm = round(mean(size_cm), digits = 1),
             median_size_cm = round(median(size_cm), digits = 1),
             sd_size_cm = round(sd(size_cm), digits = 1),
             sample_size = n())
 
+
 # create table to display stats
-stats_urchins %>% 
+urchins_clean_stats %>% 
   kable(col.names = c("Species",
                       "Mean (cm)",
                       "Median (cm)",
@@ -107,6 +111,7 @@ stats_urchins %>%
                       "Sample size (n)"),
         caption = "**Table 1.** Descriptive statistics of purple and red urchin sizes.") %>% 
   
+  #customize table styling
   kable_classic(full_width = FALSE,
                 html_font = "Cambria",
                 position = "left")
@@ -116,7 +121,7 @@ The sample of purple urchins have a mean and median of 4.5cm, while red urchins 
 
 
 
-## Section 2 - Purple urchin counts by location and year.
+# [Purple urchin counts by site and year.]{.ul}
 
 In this section I focus on purple urchins and explore the changes in count by research site over time. To do this, I first create a dataframe containing only observations for purple urchins. A column with full research site names is added for clarification.
 
