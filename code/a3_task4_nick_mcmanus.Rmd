@@ -5,7 +5,7 @@ date: "10/23/2021"
 output: html_document
 ---
 
-# Overview
+# [Overview]{.ul}
 
 The "control" treatment did not remove any giant kelp (*Macrocystis pyriferais*) within the 2000 m$^2$ plot. The "Annual" treatment involved yearly removal of giant kelp at an adjacent 2000 m$^2$ plot and allowed to recolonize throughout the year. 
 
