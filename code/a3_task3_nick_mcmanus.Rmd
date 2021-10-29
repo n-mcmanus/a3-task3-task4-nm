@@ -145,6 +145,7 @@ purple_urchins_site_year <- purple_urchins %>%
 head(purple_urchins_site_year)
 ```
 
+
 Finally, I visually present the changes of purple urchin count over time utilizing a line graph.
 
 ```{r, fig.cap = "**Figure 2. Change in Purple Urchin counts between research locations from 2008 to 2020.** Different research sites are represented by different colored lines in the graph. From to 2008 and 2011, Purple urchins were counted at four different research sites. Isla Vista Reef began in 2012."}
