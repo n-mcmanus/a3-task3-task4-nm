@@ -2,17 +2,29 @@
 title: "Task 4 - Naples Reef purple urchins (McManus)"
 author: "Nick McManus"
 date: "10/23/2021"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
+    theme: spacelab
 ---
 
-# [Overview]{.ul}
+# Overview
 
-The "control" treatment did not remove any giant kelp (*Macrocystis pyriferais*) within the 2000 m$^2$ plot. The "Annual" treatment involved yearly removal of giant kelp at an adjacent 2000 m$^2$ plot and allowed to recolonize throughout the year. 
+This task utilizes the same urchin dataset as Task 3. In this task, I explore the difference between two experimental treatment types. The "control" treatment did not remove any giant kelp (*Macrocystis pyriferais*) within the 2000 m$^2$ plot. The "Annual" treatment involved yearly removal of giant kelp at an adjacent 2000 m$^2$ plot and allowed to recolonize throughout the year. Utilizing the `urchins.csv` data, I see how these two treatments affected size distribution of purple urchins at Naples Reef in 2010.
+
+**Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. <https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b>.
 
 
 
-```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE)
+
+# Setup
+
+### Attach packages
+
+First I need to attach all packages used for this analysis.
+
+```{r setup, include=TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # attach packages
 library(tidyverse)
 library(here)
@@ -20,6 +32,10 @@ library(janitor)
 library(lubridate)
 library(kableExtra)
 ```
+
+### Data prep
+
+Here I read in the raw data from `urchins.csv`, then clean the data to make the data easier to work with. Afterward I return the first 6 lines for reference.
 
 ```{r}
 # read in data
@@ -30,10 +46,16 @@ urchins_clean <- clean_names(urchins) %>%
   rename(size_cm = size) %>% 
   mutate(date = mdy(date),
          year = year(date))
+
+head(urchins_clean)
 ```
 
 
+
+# Data wrangling
+
 Filter the cleaned data to keep only observations for purple sea urchins at NAPL in 2010.
+
 ```{r}
 purple_urchins_napl_2010 <- urchins_clean %>% 
   # filter for only only Naples Reef, purple urchins, and the year 2010
@@ -42,7 +64,8 @@ purple_urchins_napl_2010 <- urchins_clean %>%
          common_name == "Purple Urchin")
 ```
 
-Create a subset containing helpful statics, then display in a summary table. 
+Create a subset containing the descriptive statics.
+
 ```{r}
  # compare the mean size between different treatment types
   purple_urchins_stats <- purple_urchins_napl_2010 %>% 
@@ -52,34 +75,46 @@ Create a subset containing helpful statics, then display in a summary table.
           median_size_cm = round(median(size_cm), digits = 1),
           sd_size_cm = round(sd(size_cm), digits = 1),
           sample_size = n())
+```
 
 
-# return sample statistic values in table format
+
+# Data visualization
+
+Here I use `purple_urchins_napl_2010` to create exploratory faceted histogram and QQ-plot to observe the size distribution of purple urchins.
+
+```{r}
+# create histogram
+ggplot(data = purple_urchins_napl_2010, aes(x = size_cm)) +
+  geom_histogram() +
+  facet_wrap(~ treatment)
+```
+
+```{r}
+#create qqplot
+ggplot(data = purple_urchins_napl_2010, aes(sample = size_cm)) +
+  geom_qq() +
+  facet_wrap(~ treatment)
+```
+
+Based off the QQ-plot alone, both treatments appear to be equally distributed. Looking at the histograms, it appears that the Annual treatment has a slight positive skew. Taking both figures into consideration, distribution and spread of data between treatments seems fairly equal with a slightly different central tendency. 
+
+
+Next I use the subset `purple_urchins_stats` to create a summary table.
+```{r}
+# return descriptive statistic values in table format
 purple_urchins_stats %>% 
   kable(col.names = c("Treatment type",
                       "Mean (cm)",
                       "Median (cm)",
                       "Standard deviation (cm)",
                       "Sample size (n)"),
-        caption = "**Table 1.** Comparison of purple urchin sizes between treatment types at Naples Reef in 2010")  %>% 
+        caption = "**Table 1.** Descriptive statistics of purple urchin sizes between treatment types at Naples Reef in 2010")  %>% 
   
   kable_styling(full_width = FALSE,
                 bootstrap_options = "hover",
+                html_font = "Cambria",
                 position = "left")
-  
 ```
 
-
-```{r}
-ggplot(data = purple_urchins_napl_2010, aes(x = size_cm)) +
-  geom_histogram() +
-  facet_wrap(~ treatment)
-```
-
-
-```{r}
-ggplot(data = purple_urchins_napl_2010, aes(sample = size_cm)) +
-  geom_qq() +
-  facet_wrap(~ treatment)
-```
-
+Table 1 confirms that the spread of data between treatment types is equal and there is a 5% difference (0.2cm) in means values. 
